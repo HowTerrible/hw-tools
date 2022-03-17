@@ -1,0 +1,88 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>file-uploader</title>
+    <style>
+      .file-item {
+        list-style: none;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+      }
+      .file-info-title {
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <input id="upload-btn" type="button" value="上传按钮" />
+    <ul id="file-list"></ul>
+  </body>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script type="module">
+    import { PyyFileUploader } from "../file-uploader.js";
+    var uploadBtn = document.getElementById("upload-btn");
+    var fileUploader = (window.PyyFileUploader = new PyyFileUploader(
+      uploadBtn,
+      {
+        uploadFunc: (params) => {
+          return axios
+            .post("/uploader-file", params, {
+              timeout: 0,
+              headers: { "content-type": "multipart/form-data" },
+            })
+            .then((res) => {
+              return res.data;
+            })
+            .catch((err) => {
+              console.log(err);
+              return new Promise((resolve) => {
+                resolve({});
+              });
+            });
+        },
+      }
+    ));
+    fileUploader.SetMultiple(true);
+    fileUploader.onFilesAdded(({ files }) => {
+      files.forEach((item) => {
+        renderFileListItem(item);
+      });
+    });
+
+    fileUploader.onFilePercentChanged((file) => {
+      file.file && file.file.percentEl
+        ? (file.file.percentEl.innerText = file.percent)
+        : null;
+    });
+    var fileList = document.getElementById("file-list");
+    function renderFileListItem(file) {
+      var li = document.createElement("li");
+      li.className = "file-item";
+      var nameSpan = document.createElement("span");
+      nameSpan.className = "file-info-title";
+      nameSpan.innerText = "文件名;";
+
+      li.appendChild(nameSpan);
+
+      nameSpan = document.createElement("span");
+      nameSpan.innerText = file.name;
+
+      li.appendChild(nameSpan);
+
+      nameSpan = document.createElement("span");
+      nameSpan.className = "file-info-title";
+      nameSpan.innerText = "文件状态;";
+
+      li.appendChild(nameSpan);
+
+      nameSpan = document.createElement("span");
+      nameSpan.innerText = "0";
+      file.percentEl = nameSpan;
+
+      li.appendChild(nameSpan);
+      fileList.appendChild(li);
+    }
+  </script>
+</html>

@@ -1,0 +1,49 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>core</title>
+  </head>
+  <body>
+    <input type="file" onchange="onFileChange(event)" />
+  </body>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script type="module">
+    import { FileUploader } from "../core.js";
+    window.fileUploader = new FileUploader();
+    fileUploader.SetUploadFileCallback((params) => {
+      return axios
+        .post("/uploader-file", params, {
+          timeout: 0,
+          headers: { "content-type": "multipart/form-data" },
+        })
+        .then((res) => {
+          return res.data;
+        })
+        .catch((err) => {
+          console.log(err);
+          return new Promise((resolve) => {
+            resolve({});
+          });
+        });
+    });
+  </script>
+  <script>
+    function onFileChange(e) {
+      const file = e.target.files[0];
+      fileUploader.doUpload(
+        {
+          lastModified: file.lastModified,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          file: file,
+        },
+        { aaa: 11, bbb: 22 }
+      );
+      e.target.value = "";
+    }
+  </script>
+</html>

@@ -1,0 +1,110 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doc2Type</title>
+    <style>
+      html,
+      body,
+      div,
+      span {
+        margin: 0;
+        padding: 0;
+      }
+      body > * {
+        padding: 0 20px;
+      }
+      .container > * {
+        box-sizing: border-box;
+        padding: 20px;
+        margin: 10px 0;
+        width: 100%;
+        display: flex;
+      }
+      .container > * > * {
+        flex: 1;
+      }
+
+      pre {
+        border-bottom: 1px dashed gray;
+      }
+      #doc-area {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+      #doc-area > * {
+        display: block;
+        width: 100%;
+        margin-bottom: 30px;
+        height: 50%;
+      }
+      #doc-area::before {
+        content: "请求参数";
+        position: absolute;
+        top: 0px;
+      }
+      #doc-area::after {
+        content: "响应参数";
+        position: absolute;
+        top: 44%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <textarea id="doc" cols="30" rows="10"></textarea>
+      </div>
+      <div>
+        <input type="button" value="分析文档" onclick="onClickAnalysisDoc()" />
+      </div>
+      <div id="doc-area">
+        <textarea id="request" cols="30" rows="10"></textarea>
+        <textarea id="response" cols="30" rows="10"></textarea>
+      </div>
+      <div>
+        <input type="button" value="生成类型" onclick="onClickGenerateType()" />
+      </div>
+    </div>
+  </body>
+  <script src="./index.js"></script>
+  <script>
+    const requestReg = /请求参数\*\*:([\d\D]*)\*\*响应状态/;
+    const reponseReg = /响应参数\*\*:([\d\D]*)\*\*响应示例/;
+    function onClickAnalysisDoc() {
+      document.querySelectorAll("pre").forEach((item) => {
+        item.innerHTML = "";
+      });
+
+      let doc = document.getElementById("doc");
+      if (doc && doc.value) {
+        const temp = doc.value;
+        const reqResult = temp.match(requestReg);
+        if (reqResult && reqResult[1]) {
+          document.getElementById("request").value = reqResult[1];
+          generateType(reqResult[1], "request");
+        } else {
+          document.getElementById("request").value = "";
+        }
+
+        const resResult = temp.match(reponseReg);
+        if (resResult && resResult[1]) {
+          document.getElementById("response").value = resResult[1];
+          generateType(resResult[1], "response");
+        } else {
+          document.getElementById("response").value = "";
+        }
+      }
+    }
+
+    function onClickGenerateType() {
+      document.querySelectorAll("pre").forEach((item) => {
+        item.innerHTML = "";
+      });
+      generateType(document.getElementById("request").value, "request");
+      generateType(document.getElementById("response").value, "response");
+    }
+  </script>
+</html>
