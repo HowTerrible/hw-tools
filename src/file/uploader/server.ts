@@ -6,6 +6,7 @@ const formidable = require("formidable");
 const fileUploaderServer = express();
 const port = 3001;
 
+/** 默认地址重定向到首页 */
 fileUploaderServer.use(
   express.static(path.join(__dirname, "/"), { index: "/server/index.html" })
 );
@@ -40,6 +41,7 @@ fileUploaderServer.post("/uploader-file", function (req, res, next) {
       next(err);
       return;
     }
+    console.log("files", files);
     console.log("fileName", files.file.originalFilename);
     const oldpath = files.file.filepath;
     const newname = files.file.originalFilename;
