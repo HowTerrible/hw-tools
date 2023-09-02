@@ -66,90 +66,90 @@
     </div>
 
     <div id='inputContainer' class='container'>
-      <div class=' containerHeader''>输入</div>
-      <textarea id=' input' class='input' cols="30" rows="10"></textarea>
-        <input type="button" value="转换" onclick='onInputTransfer()'>
-      </div>
-
-      <div id='outputContainer' class='container'>
-        <div class='containerHeader'>输出</div>
-        <textarea id='output' class='output'></textarea>
-        <input type="button" value="复制到粘贴板" onclick='onOutputClicked(event)'>
-      </div>
-
+      <div class='containerHeader'>输入</div>
+      <textarea id='input' class='input' cols="30" rows="10"></textarea>
+      <input type="button" value="转换" onclick='onInputTransfer()'>
     </div>
 
-    <script src="./commets2Enum.js"></script>
-    <script src="./docExcel2Type.js"></script>
-    <script src="./enum2Comment.js"></script>
+    <div id='outputContainer' class='container'>
+      <div class='containerHeader'>输出</div>
+      <textarea id='output' class='output'></textarea>
+      <input type="button" value="复制到粘贴板" onclick='onOutputClicked(event)'>
+    </div>
 
-    <script>
+  </div>
 
-      const operatesDiv = document.getElementById("operatesContainer");
-      [
-        {
-          type: "docExcel2Type",
-          name: "Excel转换后的文档转ts接口"
-        },
-        {
-          type: "comments2Enum",
-          name: "注释转枚举"
-        },
-        {
-          type: "enum2Comments",
-          name: "枚举转注释"
-        },
-      ].forEach(item => {
-        const operateName = document.createElement("span")
-        operateName.innerText = item.name;
+  <script src="./commets2Enum.js"></script>
+  <script src="./docExcel2Type.js"></script>
+  <script src="./enum2Comment.js"></script>
 
-        const operateRadio = document.createElement("input");
-        operateRadio.type = "radio";
-        operateRadio.name = "operateType";
-        operateRadio.value = item.type
+  <script>
 
-        const label = document.createElement("label");
-        label.className = "operate"
-        label.appendChild(operateName)
-        label.appendChild(operateRadio)
+    const operatesDiv = document.getElementById("operatesContainer");
+    [
+      {
+        type: "docExcel2Type",
+        name: "Excel转换后的文档转ts接口"
+      },
+      {
+        type: "comments2Enum",
+        name: "注释转枚举"
+      },
+      {
+        type: "enum2Comments",
+        name: "枚举转注释"
+      },
+    ].forEach(item => {
+      const operateName = document.createElement("span")
+      operateName.innerText = item.name;
 
-        operatesDiv.appendChild(label)
-      })
+      const operateRadio = document.createElement("input");
+      operateRadio.type = "radio";
+      operateRadio.name = "operateType";
+      operateRadio.value = item.type
 
-      document.querySelector("input[name=operateType]").checked = true
+      const label = document.createElement("label");
+      label.className = "operate"
+      label.appendChild(operateName)
+      label.appendChild(operateRadio)
 
-      function onInputTransfer() {
-        const textarea = document.getElementById("input");
-        if (!textarea.value || !textarea.value.trim()) {
-          console.warn("empty input")
-          return
-        }
-        const checkedRadio = document.querySelector("input[name=operateType]:checked");
-        if (!checkedRadio.value || !checkedRadio.value.trim()) {
-          console.warn("must choose one type")
-          return
-        }
+      operatesDiv.appendChild(label)
+    })
 
-        if (typeof doc2type === 'undefined' || !doc2type[checkedRadio.value]) {
-          console.warn("missing doc2type");
-          return
-        }
+    document.querySelector("input[name=operateType]").checked = true
 
-        const result = doc2type[checkedRadio.value](textarea.value);
-
-        let output = document.getElementById("output");
-        output.innerHTML = result
+    function onInputTransfer() {
+      const textarea = document.getElementById("input");
+      if (!textarea.value || !textarea.value.trim()) {
+        console.warn("empty input")
+        return
+      }
+      const checkedRadio = document.querySelector("input[name=operateType]:checked");
+      if (!checkedRadio.value || !checkedRadio.value.trim()) {
+        console.warn("must choose one type")
+        return
       }
 
-      function onOutputClicked() {
-        let output = document.getElementById("output");
-        if (output.value) {
-          output.select();
-          if (document.execCommand('copy')) document.execCommand('copy')
-        }
+      if (typeof doc2type === 'undefined' || !doc2type[checkedRadio.value]) {
+        console.warn("missing doc2type");
+        return
       }
 
-    </script>
+      const result = doc2type[checkedRadio.value](textarea.value);
+
+      let output = document.getElementById("output");
+      output.innerHTML = result
+    }
+
+    function onOutputClicked() {
+      let output = document.getElementById("output");
+      if (output.value) {
+        output.select();
+        if (document.execCommand('copy')) document.execCommand('copy')
+      }
+    }
+
+  </script>
 </body>
 
 </html>
