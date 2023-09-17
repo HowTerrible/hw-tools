@@ -41,6 +41,7 @@ fileUploaderServer.post("/uploader-file", function (req, res, next) {
       next(err);
       return;
     }
+    console.log("files", files);
     console.log("fileName", files.file.originalFilename);
     const oldpath = files.file.filepath;
     const newname = files.file.originalFilename;

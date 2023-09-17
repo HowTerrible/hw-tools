@@ -1,0 +1,155 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    * {
+      transition-duration: 300ms;
+    }
+
+    .base {
+      position: relative;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      width: 800px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+      border: 1px solid lightgray;
+    }
+
+    .operate {
+      border-radius: 5px;
+      padding: 8px;
+      display: inline-block;
+      border: 1px solid lightgray;
+      margin-right: 6px;
+      cursor: pointer;
+    }
+
+    .container {
+      margin-bottom: 20px;
+    }
+
+    .containerHeader {
+      margin-bottom: 8px;
+    }
+
+    input[type=button] {
+      width: 100%;
+      padding: 4px 0;
+      background-color: white;
+      box-shadow: none;
+
+      border: 1px solid lightgray;
+      cursor: pointer;
+    }
+
+    input[type=button]:hover {
+      opacity: 0.6;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class='base'>
+
+    <div id='operatesContainer' class='container'>
+      <div class='containerHeader'>操作类型</div>
+    </div>
+
+    <div id='inputContainer' class='container'>
+      <div class='containerHeader'>输入</div>
+      <textarea id='input' class='input' cols="30" rows="10"></textarea>
+      <input type="button" value="转换" onclick='onInputTransfer()'>
+    </div>
+
+    <div id='outputContainer' class='container'>
+      <div class='containerHeader'>输出</div>
+      <textarea id='output' class='output'></textarea>
+      <input type="button" value="复制到粘贴板" onclick='onOutputClicked(event)'>
+    </div>
+
+  </div>
+
+  <script src="./commets2Enum.js"></script>
+  <script src="./docExcel2Type.js"></script>
+  <script src="./enum2Comment.js"></script>
+
+  <script>
+
+    const operatesDiv = document.getElementById("operatesContainer");
+    [
+      {
+        type: "docExcel2Type",
+        name: "Excel转换后的文档转ts接口"
+      },
+      {
+        type: "comments2Enum",
+        name: "注释转枚举"
+      },
+      {
+        type: "enum2Comments",
+        name: "枚举转注释"
+      },
+    ].forEach(item => {
+      const operateName = document.createElement("span")
+      operateName.innerText = item.name;
+
+      const operateRadio = document.createElement("input");
+      operateRadio.type = "radio";
+      operateRadio.name = "operateType";
+      operateRadio.value = item.type
+
+      const label = document.createElement("label");
+      label.className = "operate"
+      label.appendChild(operateName)
+      label.appendChild(operateRadio)
+
+      operatesDiv.appendChild(label)
+    })
+
+    document.querySelector("input[name=operateType]").checked = true
+
+    function onInputTransfer() {
+      const textarea = document.getElementById("input");
+      if (!textarea.value || !textarea.value.trim()) {
+        console.warn("empty input")
+        return
+      }
+      const checkedRadio = document.querySelector("input[name=operateType]:checked");
+      if (!checkedRadio.value || !checkedRadio.value.trim()) {
+        console.warn("must choose one type")
+        return
+      }
+
+      if (typeof doc2type === 'undefined' || !doc2type[checkedRadio.value]) {
+        console.warn("missing doc2type");
+        return
+      }
+
+      const result = doc2type[checkedRadio.value](textarea.value);
+
+      let output = document.getElementById("output");
+      output.innerHTML = result
+    }
+
+    function onOutputClicked() {
+      let output = document.getElementById("output");
+      if (output.value) {
+        output.select();
+        if (document.execCommand('copy')) document.execCommand('copy')
+      }
+    }
+
+  </script>
+</body>
+
+</html>
