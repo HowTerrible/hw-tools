@@ -239,10 +239,11 @@ export class PyyFileUploader extends FileUploader {
   ) => {
     const result: Array<UploaderFileType> = [];
 
-    files.forEach((file) => {
+    files.forEach((file, index) => {
       if (file) {
         let success = true;
-        // 判断文件是否符合过滤条件的配置
+
+        /** 校验文件类型 */
         if (
           success &&
           this.filterList.indexOf(`.${GetFileExt(file.name.toLowerCase())}`) < 0
@@ -254,7 +255,7 @@ export class PyyFileUploader extends FileUploader {
           );
           success = false;
         }
-        // 判断文件是否符合过滤条件的配置
+        /** 校验文件大小 */
         if (success && file.size / MegabyteUnit > 200) {
           this.EmitError(
             UploaderErrorMap.FileOversize,
@@ -264,7 +265,8 @@ export class PyyFileUploader extends FileUploader {
           success = false;
         }
 
-        if (success && this.singleLimit && result.length >= this.singleLimit) {
+        /** 校验单次上传文件数量 */
+        if (success && this.singleLimit && index >= this.singleLimit) {
           success = false;
           // 单词上传文件数量大于singleLimit
           this.EmitError(
@@ -274,6 +276,7 @@ export class PyyFileUploader extends FileUploader {
           );
         }
 
+        /** 调用上传前回调 */
         if (
           success &&
           this.onBeforeFileAddCallback &&
@@ -285,6 +288,7 @@ export class PyyFileUploader extends FileUploader {
           });
         }
 
+        /** 将筛选通过的文件添加到队列中 */
         if (success) {
           this.setFileStatus(file, FileUploadStatus.QUEUED);
           result.push(file);
