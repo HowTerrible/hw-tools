@@ -17,9 +17,10 @@
       .map((item) => `${item[0]} = ${item[1]},`)
       .join('\n');
   }
+  const tool = { parse: Output };
   global.doc2type
-    ? (global.doc2type['comments2Enum'] = Output)
-    : (global.doc2type = { comments2Enum: Output });
+    ? (global.doc2type['comments2Enum'] = tool)
+    : (global.doc2type = { comments2Enum: tool });
 })(typeof window !== 'undefined' ? window : global);
 
 typeof global !== 'undefined'

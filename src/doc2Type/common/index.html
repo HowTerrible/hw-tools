@@ -29,8 +29,12 @@
       padding: 8px;
       display: inline-block;
       border: 1px solid lightgray;
-      margin-right: 6px;
+      margin-right: 8px;
       cursor: pointer;
+    }
+
+    .tips {
+      margin-bottom: 16px;
     }
 
     .container {
@@ -43,7 +47,7 @@
 
     input[type=button] {
       width: 100%;
-      padding: 4px 0;
+      padding: 8px 0;
       background-color: white;
       box-shadow: none;
 
@@ -64,6 +68,7 @@
     <div id='operatesContainer' class='container'>
       <div class='containerHeader'>操作类型</div>
     </div>
+    <div class="tips"></div>
 
     <div id='inputContainer' class='container'>
       <div class='containerHeader'>输入</div>
@@ -79,14 +84,25 @@
 
   </div>
 
-  <script src="./commets2Enum.js"></script>
+  <script src="./tablePaste2Type.js"></script>
   <script src="./docExcel2Type.js"></script>
+  <script src="./commets2Enum.js"></script>
   <script src="./enum2Comment.js"></script>
 
   <script>
 
+    const setTips = (type) => {
+      console.log(type, doc2type, doc2type[type], doc2type[type].tips);
+      if (doc2type && doc2type[type] && doc2type[type].tips)
+        document.querySelector("div.tips").innerText = 'tips: ' + doc2type[type].tips;
+    }
+
     const operatesDiv = document.getElementById("operatesContainer");
     [
+      {
+        type: "tablePaste2Type",
+        name: "复制的表格文档转ts参数"
+      },
       {
         type: "docExcel2Type",
         name: "Excel转换后的文档转ts接口"
@@ -107,16 +123,23 @@
       operateRadio.type = "radio";
       operateRadio.name = "operateType";
       operateRadio.value = item.type
+      operateRadio.onchange = (event) => {
+        setTips(event.target.value)
+      }
 
       const label = document.createElement("label");
       label.className = "operate"
       label.appendChild(operateName)
       label.appendChild(operateRadio)
 
+
+
       operatesDiv.appendChild(label)
     })
 
-    document.querySelector("input[name=operateType]").checked = true
+    const firstRadio = document.querySelector("input[name=operateType]");
+    firstRadio.checked = true
+    setTips(firstRadio.value)
 
     function onInputTransfer() {
       const textarea = document.getElementById("input");
@@ -130,12 +153,12 @@
         return
       }
 
-      if (typeof doc2type === 'undefined' || !doc2type[checkedRadio.value]) {
+      if (typeof doc2type === 'undefined' || !doc2type[checkedRadio.value] || !doc2type[checkedRadio.value].parse || !(typeof doc2type[checkedRadio.value].parse === 'function')) {
         console.warn("missing doc2type");
         return
       }
 
-      const result = doc2type[checkedRadio.value](textarea.value);
+      const result = doc2type[checkedRadio.value].parse(textarea.value);
 
       let output = document.getElementById("output");
       output.innerHTML = result

@@ -29,9 +29,10 @@
     return data && data.length ? data.join(', ') : '';
   }
 
+  const tool = { parse: Output };
   global.doc2type
-    ? (global.doc2type['enum2Comments'] = Output)
-    : (global.doc2type = { enum2Comments: Output });
+    ? (global.doc2type['enum2Comments'] = tool)
+    : (global.doc2type = { enum2Comments: tool });
 })(typeof window !== 'undefined' ? window : global);
 
 typeof global !== 'undefined'

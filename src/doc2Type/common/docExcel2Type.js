@@ -37,10 +37,10 @@
       )
       .join('\n');
   }
-
+  const tool = { parse: Output };
   global.doc2type
-    ? (global.doc2type['docExcel2Type'] = Output)
-    : (global.doc2type = { docExcel2Type: Output });
+    ? (global.doc2type['docExcel2Type'] = tool)
+    : (global.doc2type = { docExcel2Type: tool });
 })(typeof window !== 'undefined' ? window : global);
 
 typeof global !== 'undefined'
